@@ -1,0 +1,76 @@
+#include <iostream>
+#include "stdlib.h"
+#include "stdio.h"
+#include "math.h"
+#include "locale"
+#include "fstream"
+#include "time.h"
+using namespace std;
+
+void input(int *a, int n);
+void output(int* a, int n);
+int sum(int n);
+int maximum(int *b, int n);
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+	srand(time(NULL));
+
+	int n, * a, *b, m;
+
+	cout << "Введите количество элементов массива: ";
+	cin >> n;
+	a = new int[n];
+	b = new int[n];
+	input(a, n);
+	output(a, n);
+	for (int i = 0; i < n; i++) b[i] = sum(a[i]);
+	m = maximum(b, n);
+	cout << endl << endl;
+	for (int i = 0; i < n; i++)
+	{
+		if (b[i] == m)
+		{
+			cout << a[i] << "\t" << i << endl;
+		}
+	}
+	return 0;
+}
+
+void input(int *a, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		a[i] = rand();
+	}
+}
+
+void output(int* a, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		cout << a[i] << "  ";
+	}
+}
+
+int sum(int n)
+{
+	int s = 0;
+	while (n > 0)
+	{
+		s = s + (n % 10);
+		n = n / 10;
+	}
+	return s;
+}
+
+int maximum(int* a, int n)
+{
+	int m = 0;
+	for (int i = 0; i < n; i++)
+	{
+		if (a[i] >= m) m = a[i];
+	}
+	return m;
+}
