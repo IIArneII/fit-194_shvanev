@@ -1,0 +1,154 @@
+#include <iostream>
+#include "stdlib.h"
+#include "stdio.h"
+#include "math.h"
+#include "locale"
+#include "fstream"
+#include "time.h"
+using namespace std;
+
+void direct(int* a, int n);
+void input(int* a, int n, int before, int sub);
+void output(int* a, int n);
+
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+	srand(time(NULL));
+
+	int choosee = -1;
+
+	cout << "\tЛабораторная работа по языкам программирования\n\t\tВариант 10";
+	while (choosee != 0)
+	{
+		cout << "\n\nВвидите номер задания. Для выхода введите 0: ";
+		cin >> choosee;
+
+		if (choosee == 1)
+		{
+			//Задание 1: Сформировать динамический одномерный массив из упорядоченных по возрастанию отрицательных чисел, считанных из файла. Количество чисел в файле неизвестно.
+
+			int choose;
+			cout << endl << "\tЗадание 1\n\nЧто вы хотите сделать?\n\t1)Создать файл с элементами\n\t2)Выполнить само задание\n";
+			cin >> choose;
+
+			if (choose == 1)
+			{
+				ofstream f;
+				f.open("D:\\works\\lab\\lab\\file.txt", ios::out);
+				int n = rand() % 1000;
+				for (int i = 0; i < n; i++)
+				{
+					f << rand() % 1000 - 500 << endl;
+				}
+				f.close();
+				cout << "\aСоздание завершено"; //\а - проигрывает звуковое уведомление
+			}
+
+			if (choose == 2)
+			{
+				int n = 0, o, * a, i = 0;
+				ifstream f;
+				f.open("D:\\works\\lab\\lab\\file.txt", ios::in);
+				while (!f.eof())
+				{
+					f >> o;
+					if (o < 0) n++;
+				}
+				f.close();
+				a = new int[n];
+				f.open("D:\\works\\lab\\lab\\file.txt", ios::in);
+				while (!f.eof())
+				{
+					f >> o;
+					if (o < 0)
+					{
+						a[i] = o;
+						i++;
+					}
+				}
+				direct(a, n);
+				cout << endl;
+				output(a, n);
+			}
+
+			/*
+			Ввод:		массив из 25 чисел: 53  190  167  -139  319  -236  -354  -436  324  -295  271  -393  184  108  -242  87  -374  482  246  335  -49  -89  164  -357  -454
+			Вывод:		-454  -436  -393  -374  -357  -354  -295  -242  -236  -139  -89  -49
+			Мой ответ:	-454  -436  -393  -374  -357  -354  -295  -242  -236  -139  -89  -49
+			*/
+		}
+		if (choosee == 2)
+		{
+			//Задание 2: Заполнить динамический массив случайными числами из интервала [a,b].
+			//Получить новый массив, добавив после каждого отрицательного элемента заданное число k. Решить задачу без выделения лишней памяти.
+
+			int a, b, k, n, * f;
+
+			cout << endl << "\tЗадание 2\n\nВведите a: ";
+			cin >> a;
+			cout << "Введите b: ";
+			cin >> b;
+			cout << "Введите k: ";
+			cin >> k;
+			cout << "Введите n: ";
+			cin >> n;
+			f = new int[n];
+			input(f, n, b, a);
+			cout << "Первоначальный массив: ";
+			output(f, n);
+			for (int i = 0; i < n; i++)
+			{
+				if (f[i] < 0)
+				{
+					int* b;
+					b = new int[n];
+					for (int i = 0; i < n; i++) b[i] = f[i];
+					delete[]f;
+					f = new int[n + 1];
+					for (int i = 0; i < n; i++) f[i] = b[i];
+					delete[]b;
+					for (int j = n; j > i; j--) f[j] = f[j - 1];
+					f[i + 1] = k;
+					n++;
+				}
+			}
+			cout << endl << endl;
+			cout << "Полученный массив: ";
+			output(f, n);
+
+			/*
+			Ввыод:		a = -10   b = 20   k = 888   n = 15
+						Первоначальный массив: 7  15  10  17  4  2  -5  1  12  -5  -6  17  -10  1  7
+			Вывод:		Полученный массив: 7  15  10  17  4  2  -5  888  1  12  -5  888  -6  888  17  -10  888  1  7
+			Мой ответ:	7  15  10  17  4  2  -5  888  1  12  -5  888  -6  888  17  -10  888  1  7
+			*/
+		}
+	}
+	return 0;
+}
+
+void direct(int *a, int n)		//Метод сортировки прямого включения. На вход подаются: массив, количество элементов
+{
+	int i, j, o;
+	for (i = 1; i <= n - 1; i++)
+	{
+		o = a[i];
+		for (j = i - 1; j >= 0 && o < a[j]; j--)
+		{
+			a[j + 1] = a[j];
+		}
+		a[j + 1] = o;
+	}
+}
+
+void input(int* a, int n, int before, int sub)	//Заполняет массив случайными элементами. На вход подаются:   1) Массив
+{																											//2) Колво элементов
+	for (int i = 0; i < n; i++) a[i] = rand() % (before - sub + 1) + sub;									//3) Число, которое определяет верхнюю границу
+}																											//4) Число, которое определяет нижнюю границу
+
+void output(int* a, int n)	//Выводит массив на экран. На вход подаются: массив, колво элементов
+{
+	for (int i = 0; i < n; i++) printf("%d  ", a[i]);
+}
