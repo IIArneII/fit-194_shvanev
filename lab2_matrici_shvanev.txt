@@ -1,0 +1,1555 @@
+#include <iostream>
+#include "stdlib.h"
+#include "stdio.h"
+#include "math.h"
+#include "locale"
+#include "fstream"
+#include "time.h"
+#include "windows.h"
+using namespace std;
+
+void output(int* a, int n);
+void output(float* a, int n);
+void input(float* a, int n, int sub, int before);
+void input2(int** a, int n, int m, int before, int sub);
+void input2(float** a, int n, int m, int sub, int before);
+void input2(double** a, int n, int m, int sub, int before);
+void output2(int** a, int n, int m);
+void output2(string** a, int n, int m);
+void output2(float** a, int n, int m);
+void transp(int** a, int n);
+void transpin(int** a, int** b, int n, int m);
+void summ2(int** a, int** b, int** c, int n, int m);
+void multip2(int** a, int** b, int** c, int n, int m, int k);
+void multip2(double** a, double** b, double** c, int n, int m, int k);
+void swap_line(int **a, int m, int n1, int n2);
+void swap_line(double** a, int m, int n1, int n2);
+void move(string **a, int& win);
+void mult_num(int** a, int n, int m, int x);
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+	srand(time(NULL));
+
+	int choosee = -1;
+	ifstream f;
+
+	cout << "\tЛабораторная работа по языкам программирования\n\t\tВариант 9   ";
+
+	while (choosee != 0)
+	{
+		cout << "\nВведите номер задания:\n\t1. Игра в жизнь\n\t2. Метод Гауса\n\t3. Состязание по стрельбе\n\t4. Вариант 9, задача 1 - сменить местами элеменрты из зеленой и красной области\n\t5. Вариант 9, задача 2 - выражение из матриц и векторов\n\t6. Крестики - нолики\n\t7. Сгенерировать матрицу Гилберта\n\t0. Выход\n";
+		cin >> choosee;
+
+		if (choosee == 1)
+		{
+			int n, **a, **b, gen;
+
+			system("cls");
+			cout << "Задание 1: Игра в жизнь\nВведите размерность поля с клетками: ";
+			cin >> n;
+
+			while (n <= 0)
+			{
+				cout << "Введено недопустимое значение. Введите еще раз: ";
+				cin >> n;
+			}
+			n += 2;
+			cout << "Введите количество поколений: ";
+			cin >> gen;
+			while (gen <= 0)
+			{
+				cout << "Введено недопустимое значение. Введите еще раз: ";
+				cin >> gen;
+			}
+			a = new int* [n];
+			for (int i = 0; i < n; i++)
+			{
+				a[i] = new int[n];
+			}
+			b = new int* [n];
+			for (int i = 0; i < n; i++)
+			{
+				b[i] = new int[n];
+			}
+			input2(a, n, n, 0, 1);
+			for (int i = 0; i < n; i++) a[0][i] = 8;
+			for (int i = 0; i < n; i++) a[i][n - 1] = 8;
+			for (int i = 0; i < n; i++) a[n - 1][i] = 8;
+			for (int i = 0; i < n; i++) a[i][0] = 8;
+			system("cls");
+			cout << "Игра в жизнь\n\nПоколение 0 / "<< gen << " :" << endl;
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					if (a[i][j] == 0)
+					{
+						cout << "  ";
+					}
+					if (a[i][j] == 1)
+					{
+						HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+						SetConsoleTextAttribute(handle, BACKGROUND_GREEN);
+						cout << "  ";
+					}
+					if (a[i][j] == 8)
+					{
+						HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+						SetConsoleTextAttribute(handle, BACKGROUND_BLUE);
+						cout << "  ";
+					}
+					HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+					SetConsoleTextAttribute(handle, 15 | 0);
+				}
+				cout << endl;
+			}
+			Sleep(500);
+			for (int k = 1; k <= gen; k++)
+			{
+				input2(b, n, n, 8, 8);
+				for (int i = 1; i < n - 1; i++)
+				{
+					for (int j = 1; j < n - 1; j++)
+					{
+						int live = 0;
+
+						if (a[i - 1][j] == 1) live++;
+						if (a[i - 1][j + 1] == 1) live++;
+						if (a[i][j + 1] == 1) live++;
+						if (a[i + 1][j + 1] == 1) live++;
+						if (a[i + 1][j] == 1) live++;
+						if (a[i + 1][j - 1] == 1) live++;
+						if (a[i][j - 1] == 1) live++;
+						if (a[i - 1][j - 1] == 1) live++;
+
+						if (a[i][j] == 1)
+						{
+							if (live < 2) b[i][j] = 0;
+							if (live > 3) b[i][j] = 0;
+						}
+						if (a[i][j] == 0)
+						{
+							if (live == 3) b[i][j] = 1;
+						}
+					}
+				}
+				for (int i = 1; i < n - 1; i++)
+				{
+					for (int j = 1; j < n - 1; j++)
+					{
+						if (b[i][j] == 0) a[i][j] = 0;
+						if (b[i][j] == 1) a[i][j] = 1;
+					}
+				}
+				system("cls");
+				cout << "Игра в жизнь\n\nПоколение " << k << " / " << gen << " :\n";
+				for (int i = 0; i < n; i++)
+				{
+					for (int j = 0; j < n; j++)
+					{
+						if (a[i][j] == 0)
+						{
+							cout << "  ";
+						}
+						if (a[i][j] == 1)
+						{
+							HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+							SetConsoleTextAttribute(handle, BACKGROUND_GREEN);
+							cout << "  ";
+						}
+						if (a[i][j] == 8)
+						{
+							HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+							SetConsoleTextAttribute(handle, BACKGROUND_BLUE);
+							cout << "  ";
+						}
+						HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+						SetConsoleTextAttribute(handle, 15 | 0);
+					}
+					cout << endl;
+				}
+				Sleep(500);
+			}
+			for (int i = 0; i < n; i++) delete[] a[i];
+			delete[]a;
+			for (int i = 0; i < n; i++) delete[] b[i];
+			delete[]b;
+		}
+
+		if (choosee == 2)
+		{
+			int n, m, sol = 1;			//sol - определяет, какое решение имеет система. 1 - обычное решение к константными ответами. 0 - не имеет решений. 2 - фундаментальная система решений
+			double **a, **b, **x, **A, **B;
+
+			system("cls");
+			cout << "Задание 2: решение СЛАУ методом Гауса\nВведите N (Количество уравнений в системе): ";
+			cin >> n;
+			while (n <= 0)
+			{
+				cout << "Введено недопустимое значение. Введите еще раз: ";
+				cin >> n;
+			}
+			cout << "Введите M (Количесво неизвестных): ";
+			cin >> m;
+			while (m <= 0)
+			{
+				cout << "Введено недопустимое значение. Введите еще раз: ";
+				cin >> m;
+			}
+			a = new double* [n];
+			for (int i = 0; i < n; i++)
+			{
+				a[i] = new double[m+1];
+			}
+			A = new double* [n];
+			for (int i = 0; i < n; i++)
+			{
+				A[i] = new double[m];
+			}
+			b = new double* [n];
+			for (int i = 0; i < n; i++)
+			{
+				b[i] = new double[1];
+			}
+			B = new double* [n];
+			for (int i = 0; i < n; i++)
+			{
+				B[i] = new double[1];
+			}
+			x = new double* [m];
+			for (int i = 0; i < m; i++)
+			{
+				x[i] = new double[1];
+			}
+			
+			f.open("D:\\function\\task2.txt", ios::in);
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j <= m; j++) f >> a[i][j];
+			}
+			f.close();
+			
+			input2(a, n, m + 1, -10, 10);
+
+			for (int i = 0; i < n; i++)
+			{
+				b[i][0] = a[i][m];
+			}
+			for (int i = 0; i < n; i++)
+			{
+				for(int j = 0; j < m; j++)
+				A[i][j] = a[i][j];
+			}
+
+			cout << "Матрица:\n";
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < m; j++)
+				{
+					printf("%10.3f", a[i][j]);
+				}
+				printf("  |%8.3f\n", a[i][m]);
+			}
+
+			for (int k = 0; k < n; k++)		//Приведение к ступенчатому виду
+			{
+				if (a[k][k] == 0)
+				{
+					for (int i = k + 1; i < n; i++)
+					{
+						if (a[i][k] != 0)
+						{
+							swap_line(a, m + 1, k, i);
+							break;
+						}
+					}
+					if (a[k][k] == 0)
+					{
+						continue;
+					}
+				}
+				for (int i = k + 1; i < n; i++)
+				{
+					double s = a[i][k] / a[k][k];
+					for (int j = k; j < m + 1; j++)
+					{
+						a[i][j] = a[i][j] - (a[k][j] * s);
+					}
+				}
+			}
+
+			cout << "\nМатрица в ступенчатом виде:\n";
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < m; j++)
+				{
+					printf("%10.3f", a[i][j]);
+				}
+				printf("  |%8.3f\n", a[i][m]);
+			}
+
+
+			int nulline = 0;
+			for (int i = n - 1; i > 0; i--)
+			{
+				double sum = 0;
+				for (int j = 0; j <= m; j++)
+				{
+					sum += fabs(a[i][j]);
+				}
+				if (sum == 0) nulline++;
+				if (sum != 0) break;
+			}
+
+			int notnul = n - nulline - 1;
+			for (int k = 1; k <= notnul && k != m; k++)	//Обратный ход
+			{
+				if (a[k][k] == 0)
+				{
+					continue;
+				}
+				for (int i = k - 1; i >= 0; i--)
+				{
+					double s = a[i][k] / a[k][k];
+					for (int j = k; j < m + 1; j++)
+					{
+						a[i][j] = a[i][j] - (a[k][j] * s);
+					}
+				}
+			}
+			for (int i = 0; i <= notnul; i++)
+			{
+				if (a[i][i] == 0)
+				{
+					if (a[i][m] != 0)
+					{
+						HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+						SetConsoleTextAttribute(handle, 12 << 4 | 0);
+						cout << "\nДанная система не имеет решений, так как есть противоречие в " << i + 1 << " строке!\n";
+						SetConsoleTextAttribute(handle, 15 | 0);
+						sol = 0;
+						break;
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else
+				{
+					if (i == m && a[i][m] != 0)
+					{
+						HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+						SetConsoleTextAttribute(handle, 12 << 4 | 0);
+						cout << "\nДанная система не имеет решений, так как есть противоречие в " << i + 1 << " строке!\n";
+						SetConsoleTextAttribute(handle, 15 | 0);
+						sol = 0;
+						break;
+					}
+					for (int j = i + 1; j < m + 1; j++)
+					{
+						a[i][j] /= a[i][i];
+					}
+					a[i][i] = 1;
+				}
+			}
+			if (sol == 1)
+			{
+				if (notnul + 1 >= m)
+				{
+					for (int i = 0; i <= notnul; i++)
+					{
+						if (a[i][i] == 0)
+						{
+							sol = 2;
+							break;
+						}
+					}
+				}
+				else
+				{
+					sol = 2;
+				}
+			}
+
+			cout << "\nМатрица решений:\n";
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < m; j++)
+				{
+					if (i == j && a[i][j] == 1)
+					{
+						HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+						SetConsoleTextAttribute(handle, 11 << 4 | 0);
+					}
+					printf("%10.3f", a[i][j]);
+					HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+					SetConsoleTextAttribute(handle, 15 | 0);
+				}
+				printf("  |  %8.10f\n", a[i][m]);
+			}
+			
+			if (sol == 2) cout << "\nДанная система имеет фундаментальное решение\n" << endl;
+
+			if (sol == 1)
+			{
+				double maxdiff = 0;
+				for (int i = 0; i < m; i++)
+				{
+					x[i][0] = a[i][m];
+				}
+				multip2(A, x, B, n, m, 1);
+				cout << "\nНевязка:\n";
+				cout << "Исходный b:\tПолученный b:\tРазность:\n";
+				for (int i = 0; i < n; i++)
+				{
+					double diff = fabs(b[i][0] - B[i][0]);
+					if (diff > maxdiff) maxdiff = diff;
+					printf("%f\t%f\t%3.25f\n", b[i][0], B[i][0], diff);
+				}
+				printf("\nМаксимальная разность: %3.25f\n", maxdiff);
+			}
+			for (int i = 0; i < n; i++) delete[] a[i];
+			delete[]a;
+			for (int i = 0; i < n; i++) delete[] A[i];
+			delete[]A;
+			for (int i = 0; i < n; i++) delete[] b[i];
+			delete[]b;
+			for (int i = 0; i < n; i++) delete[] B[i];
+			delete[]B;
+			for (int i = 0; i < m; i++) delete[] x[i];
+			delete[]x;
+		}
+
+		if (choosee == 3)
+		{
+			int n, m, ** a, maxi, maxj, num = 0, maxall, start = 1;
+
+			system("cls");
+			cout << "Задание 3: Состязание по стрельбе\nВведите N: ";
+			cin >> n;
+			while (n <= 0)
+			{
+				cout << "Введено недопустимое значение. Введите еще раз: ";
+				cin >> n;
+			}
+			cout << "Введите M: ";
+			cin >> m;
+			while (m <= 0)
+			{
+				cout << "Введено недопустимое значение. Введите еще раз: ";
+				cin >> m;
+			}
+			a = new int* [n];
+			for (int i = 0; i < n; i++)
+			{
+				a[i] = new int[m + 1];
+			}
+			//input2(a, n, m, 0, 10);
+			f.open("D:\\function\\task3.txt", ios::in);
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < m; j++) f >> a[i][j];
+			}
+			f.close();
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < m; j++)
+				{
+					if (a[i][j] < 0 || a[i][j] > 10) start = 0;
+				}
+			}
+			if (start == 0) cout << "\nОбнаружено недопустимое значение. Конец программы";
+			else
+			{
+				maxi = 0;
+				maxj = 0;
+				for (int i = 0; i < n; i++)
+				{
+					for (int j = 0; j < m; j++)
+					{
+
+						if (a[i][j] == a[maxi][maxj])
+						{
+							maxi = i;
+							maxj = j;
+							num = 1;
+						}
+						if (a[i][j] > a[maxi][maxj])
+						{
+							maxi = i;
+							maxj = j;
+							num = 0;
+						}
+					}
+				}
+				maxall = 0;
+				for (int i = 0; i < n; i++)
+				{
+					int tru = 0;
+					a[i][m] = 0;
+					for (int j = 0; j < m; j++)
+					{
+						if (a[i][j] == a[maxi][maxj]) tru = 1;
+					}
+					if (tru == 1)
+					{
+						for (int j = 0; j < m; j++)
+						{
+							a[i][m] += a[i][j];
+						}
+						if (a[i][m] > maxall) maxall = a[i][m];
+					}
+				}
+				cout << "\nТаблица результатов:\n\n";
+				for (int i = -1; i < n; i++)
+				{
+					if (i == -1)
+					{
+						cout << "Игрок\t";
+						for (int j = 0; j < m; j++) cout << "выст " << j + 1 << "\t";
+						cout << "общее";
+					}
+					else
+					{
+						cout << i + 1 << "\t";
+						for (int j = 0; j <= m; j++)
+						{
+							cout << a[i][j] << "\t";
+						}
+					}
+					cout << endl;
+				}
+				if (num == 0)
+				{
+					cout << "\nПобедители:\n" << "Игрок " << maxi + 1 << endl;
+				}
+				else
+				{
+					cout << "\nПобедители:";
+					for (int i = 0; i < n; i++)
+					{
+						if (a[i][m] == maxall) cout << "\nИгрок " << i + 1;
+					}
+				}
+			}
+			cout << endl;
+			for (int i = 0; i < n; i++) delete[] a[i];
+			delete[] a;
+		}
+
+		if (choosee == 4)
+		{
+			int n, **a, aa, bb, maxi = 0, maxj = 0, mini = 0, minj = 0;
+
+			system("cls");
+			cout << "Задание 4: Вариант 9, задача 1: В квадратной матрице размерностью N, заполненной случайными числами из интервала [a, b], необходимо найти максимальный отрицательный элемент в зеленой области и минимальный положительный в красной и поменять их местами\n";
+			cout << "Зеленая - ниже главной диагонаяли, но выше побочной\nКрасная - выше главной диагонали\n\n";
+			cout << "Введите размерность матрицы N: ";
+			cin >> n;
+			while (n <= 0)
+			{
+				cout << "Введено недопустимое значение. Введите еще раз: ";
+				cin >> n;
+			}
+			cout << "Введите нижнюю границу a: ";
+			cin >> aa;
+			cout << "Введите верхнюю границу b: ";
+			cin >> bb;
+			while (aa >= bb || aa >= 0 || bb <=0)
+			{
+				cout << "Нижняя граница не должна быть больше или равна верхней. Нужняя граница должна быть меньше нуля, а верхняя больше. Введите еще раз:\n";
+				cout << "Введите нижнюю границу a: ";
+				cin >> aa;
+				cout << "Введите верхнюю границу b: ";
+				cin >> bb;
+			}
+			a = new int* [n];
+			for (int i = 0; i < n; i++)
+			{
+				a[i] = new int[n];
+			}
+			//input2(a, n, n, aa, bb);
+			f.open("D:\\function\\task4.txt", ios::in);
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++) f >> a[i][j];
+			}
+			f.close();
+			cout << "Матрица:\n";
+
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					if (i > j&& i < n - j - 1)
+					{
+						HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+						SetConsoleTextAttribute(handle, BACKGROUND_GREEN);
+					}
+					if (i < j)
+					{
+						HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+						SetConsoleTextAttribute(handle, BACKGROUND_RED);
+					}
+					printf("%3d", a[i][j]);
+					HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+					SetConsoleTextAttribute(handle, 15 | 0);
+				}
+				cout << endl;
+			}
+
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+
+					if (i > j && i < n - j - 1)
+					{
+						if (maxi == 0 && maxj == 0 && a[i][j] < 0)
+						{
+							maxi = i;
+							maxj = j;
+						}
+						if (a[i][j] >= a[maxi][maxj] && a[i][j] < 0)
+						{
+							maxi = i;
+							maxj = j;
+						}
+					}
+					if (i < j)
+					{
+						if (mini == 0 && minj == 0 && a[i][j] > 0)
+						{
+							mini = i;
+							minj = j;
+						}
+						if (a[i][j] <= a[mini][minj] && a[i][j] > 0)
+						{
+							mini = i;
+							minj = j;
+						}
+					}
+				}
+			}
+			if ((maxi == 0 && maxj == 0) || (mini == 0 && minj == 0))
+			{
+				cout << "\nНе удалось найти подходящих элементов в зеленой и/или красной областях\n";
+			}
+			else
+			{
+				swap(a[maxi][maxj], a[mini][minj]);
+				cout << "\nИзмененная матрица:\n";
+				for (int i = 0; i < n; i++)
+				{
+					for (int j = 0; j < n; j++)
+					{
+						if (i > j&& i < n - j - 1)
+						{
+							if (i == maxi && j == maxj)
+							{
+								HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+								SetConsoleTextAttribute(handle, BACKGROUND_RED);
+							}
+							else
+							{
+								HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+								SetConsoleTextAttribute(handle, BACKGROUND_GREEN);
+							}
+						}
+						if (i < j)
+						{
+							if (i == mini && j == minj)
+							{
+								HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+								SetConsoleTextAttribute(handle, BACKGROUND_GREEN);
+							}
+							else
+							{
+								HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+								SetConsoleTextAttribute(handle, BACKGROUND_RED);
+							}
+						}
+						printf("%3d", a[i][j]);
+						HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+						SetConsoleTextAttribute(handle, 15 | 0);
+					}
+					cout << endl;
+				}
+			}
+			for (int i = 0; i < n; i++) delete[] a[i];
+			delete[] a;
+		}
+
+		if (choosee == 5)
+		{
+			int n, m, ** A, ** trA, ** C, ** B, ** D, ** trD, **mulAC, **mulBD, **s;
+
+			system("cls");
+			cout << "Задание 5: Вариант 9, задача 2: -5 * trns(A(n,m)) * C(n,m) + B(m) * trns(D(m))\nВведите n: ";
+			cin >> n;
+			while (n <= 0)
+			{
+				cout << "Введено недопустимое значение. Введите еще раз: ";
+				cin >> n;
+			}
+			cout << "Введите m: ";
+			cin >> m;
+			while (m <= 0)
+			{
+				cout << "Введено недопустимое значение. Введите еще раз: ";
+				cin >> m;
+			}
+			A = new int* [n];
+			for (int i = 0; i < n; i++)
+			{
+				A[i] = new int[m];
+			}
+			trA = new int* [m];
+			for (int i = 0; i < m; i++)
+			{
+				trA[i] = new int[n];
+			}
+			C = new int* [n];
+			for (int i = 0; i < n; i++)
+			{
+				C[i] = new int[m];
+			}
+			B = new int* [m];
+			for (int i = 0; i < m; i++)
+			{
+				B[i] = new int[1];
+			}
+			D = new int* [m];
+			for (int i = 0; i < m; i++)
+			{
+				D[i] = new int[1];
+			}
+			trD = new int* [1];
+			for (int i = 0; i < 1; i++)
+			{
+				trD[i] = new int[m];
+			}
+			mulAC = new int* [m];
+			for (int i = 0; i < m; i++)
+			{
+				mulAC[i] = new int[m];
+			}
+			mulBD = new int* [m];
+			for (int i = 0; i < m; i++)
+			{
+				mulBD[i] = new int[m];
+			}
+			s = new int* [m];
+			for (int i = 0; i < m; i++)
+			{
+				s[i] = new int[m];
+			}
+
+			//input2(A, n, m, 1, 3);
+			//input2(C, n, m, 1, 3);
+			//input2(B, m, 1, 1, 3);
+			//input2(D, m, 1, 1, 3);
+
+			f.open("D:\\function\\task5.txt", ios::in);
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < m; j++) f >> A[i][j];
+			}
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < m; j++) f >> C[i][j];
+			}
+			for (int i = 0; i < m; i++)
+			{
+				for (int j = 0; j < 1; j++) f >> B[i][j];
+			}
+			for (int i = 0; i < m; i++)
+			{
+				for (int j = 0; j < 1; j++) f >> D[i][j];
+			}
+			f.close();
+
+			cout << "Матрица A:\n";
+			output2(A, n, m);
+			cout << "\nМатрица C:\n";
+			output2(C, n, m);
+			cout << "\nВектор B:\n";
+			output2(B, m, 1);
+			cout << "\nВектор D:\n";
+			output2(D, m, 1);
+
+			transpin(A, trA, n, m); 
+			mult_num(trA, m, n, -5);
+			multip2(trA, C, mulAC, m, n, m); 
+			transpin(D, trD, m, 1); 
+			multip2(B, trD, mulBD, m, 1, m); 
+			summ2(mulAC, mulBD, s, m, m);
+			cout << "\nОтвет:\n";
+			output2(s, m, m);
+
+			for (int i = 0; i < n; i++) delete[] A[i];
+			delete[] A;
+
+			for (int i = 0; i < m; i++) delete[] trA[i];
+			delete[] trA;
+
+			for (int i = 0; i < n; i++) delete[] C[i];
+			delete[] C;
+
+			for (int i = 0; i < m; i++) delete[] B[i];
+			delete[] B;
+
+			for (int i = 0; i < m; i++) delete[] D[i];
+			delete[] D;
+
+			for (int i = 0; i < 1; i++) delete[] trD[i];
+			delete[] trD;
+
+			for (int i = 0; i < m; i++) delete[] mulAC[i];
+			delete[] mulAC;
+
+			for (int i = 0; i < m; i++) delete[] mulBD[i];
+			delete[] mulBD;
+
+			for (int i = 0; i < m; i++) delete[] s[i];
+			delete[] s;
+		}
+
+		if (choosee == 6)
+		{
+			string** a;
+			int n, m, win = 0, mv = 0;
+
+			a = new string* [3];
+			for (int i = 0; i < 3; i++)
+			{
+				a[i] = new string[3];
+			}
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					a[i][j] = "_";
+				}
+			}
+			while (true)
+			{
+				system("cls");
+				cout << "Задание 6: Крестики - нолики\n\n\tПоле:\n\n";
+				output2(a, 3, 3);
+				while (true)
+				{
+					cout << "Куда вы хотите поставить крестик?\nСтрока (1 - 3): ";
+					cin >> n;
+					cout << "Столбик (1 - 3): ";
+					cin >> m;
+					if (n > 0 && n < 4 && a[n - 1][m - 1] == "_")
+					{
+						a[n - 1][m - 1] = "x";
+						mv++;
+						break;
+					}
+					else cout << "Введено недопустимое значение или поле уже занято. Введите еще раз:\n";
+				}
+				move(a, win);
+				mv++;
+				if (win == 1 || win == 2 || mv >= 9) break;
+			}
+			system("cls");
+			cout << "Задание 6: Крестики - нолики\n\n\tПоле:\n\n";
+			output2(a, 3, 3);
+			if (win == 1) cout << "Выиграл компьютер!\n";
+			if (win == 2) cout << "Вы выиграли!\n";
+			if (win == 0) cout << "Ничья!\n";
+			for (int i = 0; i < 3; i++) delete[] a[i];
+			delete[] a;
+		}
+
+		if (choosee == 7)
+		{
+			int n, m;
+			float **a;
+
+			system("cls");
+			cout << "Данный пункт позволят сгенерировать матрицу Гилберта и записать ее в файл\nВведите N: ";
+			cin >> n;
+			cout << "Введите M: ";
+			cin >> m;
+
+			a = new float* [n];
+			for (int i = 0; i < n; i++)
+			{
+				a[i] = new float[m];
+			}
+
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < m; j++)
+				{
+					a[i][j] = 1. / (i + 1 + j + 1 - 1);
+				}
+			}
+
+			ofstream ff;
+			ff.open("D:\\function\\task2.txt");
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < m; j++) ff << a[i][j] << "\t\t";
+				ff << endl;
+			}
+			f.close();
+			cout << "Матрица сгенерирована" << endl;
+
+			for (int i = 0; i < n; i++) delete[] a[i];
+			delete[] a;
+		}
+	}
+
+	return 0;
+}
+
+void output(int* a, int n)	//Выводит целочисленный массив на экран. На вход подаются: массив, количество элементов
+{
+	for (int i = 0; i < n; i++) printf("%4d", a[i]);
+}
+
+void output(float* a, int n)	//Выводит вещественный массив на экран. На вход подаются: массив, количество элементов
+{
+	for (int i = 0; i < n; i++) printf("%10f", a[i]);
+}
+
+void input(float* a, int n, int sub, int before)	//Заполняет вещественный массив случайными элементами. На вход подаются: массив, колво элементов, нижняя граница, верхняя граница
+{																												
+	for (int i = 0; i < n; i++) a[i] = rand() % (before - sub + 1) + sub;
+}
+
+void input2(int** a, int n, int m, int sub, int before)	//Заполняет целочисленную матрицу случайными элементами. На вход подаются: матрица, количество строк, количество столбцов, нижняя граница, верхняя граница
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			a[i][j] = rand() % (before - sub + 1) + sub;
+		}
+	}
+}
+
+void input2(float** a, int n, int m, int sub, int before)	//Заполняет вещественную матрицу случайными элементами. На вход подаются: матрица, количество строк, количество столбцов, нижняя граница, верхняя граница
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			a[i][j] = rand() % (before - sub + 1) + sub;
+		}
+	}
+}
+
+void input2(double** a, int n, int m, int sub, int before)
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			a[i][j] = rand() % (before - sub + 1) + sub;
+		}
+	}
+}
+
+void output2(int** a, int n, int m)	//Выводит целочисленную матрицу на экран. На вход подаются: матрица, количество строк, количество столбцов
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			printf("%4d", a[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void output2(float** a, int n, int m)	//Выводит ыещественную матрицу на экран. На вход подаются: матрица, количество строк, количество столбцов
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			printf("%10f", a[i][j]);
+		}
+		printf("\n\n");
+	}
+}
+
+void output2(string** a, int n, int m)	//Выводит двумерный массив из строк на экран. На вход подаются: матрица, количество строк, количество столбцов
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			cout << "    " << a[i][j];
+		}
+		printf("\n\n");
+	}
+}
+
+void transp(int** a, int n)	//Транспонирует квадратную целочисленную матрицу в себя. На вход подаются: матрица, количество строк и столбцов
+{
+	for (int i = 0; i < n - 1; i++)
+	{
+		for (int j = i + 1; j < n; j++)
+		{
+			swap(a[i][j], a[j][i]);
+		}
+	}
+}
+
+void transpin(int** a, int** b, int n, int m)	//Транспонирует целочисленную матрицу a в в целовчисленную матрицу b. На вход подаются: матрица a, матрица b, количество строк матрицы a, количество столбцов матрицы a
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			b[j][i] = a[i][j];
+		}
+	}
+}
+
+void summ2(int** a, int** b, int** c, int n, int m)	//Ссуммирует целочисленные матрицы a и b и заносит результат в матрицу c. На вход подаются: матрица a, матрица b, матрица c, количество строк, количество столбцов
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			c[i][j] = a[i][j] + b[i][j];
+		}
+	}
+}
+
+void multip2(int** a, int** b, int** c, int n, int m, int k)	//Умножает целочисленные матрицы a и b и заносит результат в матрицу c. На вход подаются: матрица a, матрица b, матрица c,
+																//количество строк первой матрицы, количество столбцов первой и строк во второй, количество столбцов во второй
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < k; j++)
+		{
+			int s = 0;
+			for (int tempij = 0; tempij < m; tempij++)
+			{
+				s = s + a[i][tempij] * b[tempij][j];
+			}
+			c[i][j] = s;
+		}
+	}
+}
+
+void multip2(double** a, double** b, double** c, int n, int m, int k)	//Умножает вещественные матрицы a и b и заносит результат в матрицу c. На вход подаются: матрица a, матрица b, матрица c,
+																	//количество строк первой матрицы, количество столбцов первой и строк во второй, количество столбцов во второй
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < k; j++)
+		{
+			double s = 0;
+			for (int tempij = 0; tempij < m; tempij++)
+			{
+				s = s + a[i][tempij] * b[tempij][j];
+			}
+			c[i][j] = s;
+		}
+	}
+}
+
+void mult_num(int** a, int n, int m, int x)	//Умножает целочисленную матрицу на число. На вход подаются: матрица, количество строк, количество столбцов, число
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			a[i][j] *= x;
+		}
+	}
+}
+
+void swap_line(int** a, int m, int n1, int n2)	//Меняет местами строки целочисленной матрицы. На вход подаются: матрица, количество столбцов, номер строки 1, номер строки 2
+{
+	for (int i = 0; i < m; i++)
+	{
+		swap(a[n1][i], a[n2][i]);
+	}
+}
+
+void swap_line(double** a, int m, int n1, int n2)	//Меняет местами строки вещественной матрицы. На вход подаются: матрица, количесвто столбцов, номер строки 1, номер строки 2
+{
+	for (int i = 0; i < m; i++)
+	{
+		swap(a[n1][i], a[n2][i]);
+	}
+}
+
+void move(string** a, int &win)		//Сканирует поле 3х3 игры "крестики - нолики". Если обнаруживает ситуацию, что три крестика стоят в ряд, то win принимает значение, равное двум. Если обнаруживает ситуацию, что два нолика стоят в ряд и в нем еще остается одно пустое место, то заполняет это пустое место ноликом и win принимает значение, равное одному.
+									//Если обнаруживается ситуация, что два крестика стоят в ряд и в нем еще остается одно пустое место, то заполняет это пустое место ноликом.
+									//В остальных случаях просчитывает, куда выгоднее поставить нолик и ставит на это место.
+									//На вход подаются: двумерный массив из строк - поле игры, win - определяет победителя
+{
+	int** b, vd = 1, cr = 3, cr2 = 20, zr = 4, app = 0;
+	b = new int* [3];
+	for (int i = 0; i < 3; i++)
+	{
+		b[i] = new int[3];
+	}
+	input2(b, 3, 3, 0, 0);
+
+	for (int i = 0; i < 3; i++)	//Просмотр строк и столбцов на выигрышь игрока
+	{
+		string temp = a[i][0] + a[i][1] + a[i][2];
+
+		if (temp == "xxx")	//Три крестика
+		{
+			app++;
+			win = 2;
+			break;
+		}
+
+		temp = a[0][i] + a[1][i] + a[2][i];
+
+		if (temp == "xxx")	//Три крестика
+		{
+			app++;
+			win = 2;
+			break;
+		}
+	}
+
+	if (app == 0)		//Просмотр диагоналей на выигрышь игрока
+	{
+		for (int i = 0; i < 1; i++)
+		{
+			string temp = a[0][0] + a[1][1] + a[2][2];
+
+			if (temp == "xxx")	//Три крестика
+			{
+				app++;
+				win = 2;
+				break;
+			}
+
+			temp = a[2][0] + a[1][1] + a[0][2];
+
+			if (temp == "xxx")	//Три крестика
+			{
+				app++;
+				win = 2;
+				break;
+			}
+		}
+	}
+
+	if (app == 0)		//Просмотр строк и столбцов на выигрышь
+	{
+		for (int i = 0; i < 3; i++)		
+		{
+			string temp = a[i][0] + a[i][1] + a[i][2];
+
+			if (temp == "oo_")	//Два нолика
+			{
+				a[i][2] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+			if (temp == "o_o")
+			{
+				a[i][1] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+			if (temp == "_oo")
+			{
+				a[i][0] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+
+			temp = a[0][i] + a[1][i] + a[2][i];
+
+			if (temp == "oo_")	//Два нолика
+			{
+				a[2][i] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+			if (temp == "o_o")
+			{
+				a[1][i] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+			if (temp == "_oo")
+			{
+				a[0][i] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+		}
+	}
+
+	if (app == 0)		//Просмотр диагоналей на выигрышь
+	{
+		for (int i = 0; i < 1; i++)		
+		{
+			string temp = a[0][0] + a[1][1] + a[2][2];
+
+			if (temp == "oo_")	//Два нолика
+			{
+				a[2][2] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+			if (temp == "o_o")
+			{
+				a[1][1] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+			if (temp == "_oo")
+			{
+				a[0][0] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+
+			temp = a[2][0] + a[1][1] + a[0][2];
+
+			if (temp == "oo_")	//Два нолика
+			{
+				a[0][2] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+			if (temp == "o_o")
+			{
+				a[1][1] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+			if (temp == "_oo")
+			{
+				a[2][0] = "o";
+				app++;
+				win = 1;
+				break;
+			}
+		}
+	}
+
+	if (app == 0)	//Сканирование строк, столбцов и диагоналей
+	{
+		for (int i = 0; i < 3; i++)		//Сканирование строк и столбцов
+		{
+			string temp = a[i][0] + a[i][1] + a[i][2];		//Сканирование строк
+
+			if (temp == "___")	//Пусто
+			{
+				b[i][0] += vd;
+				b[i][1] += vd;
+				b[i][2] += vd;
+			}
+
+			if (temp == "x__")	//Один крестик
+			{
+				b[i][1] += cr;
+				b[i][2] += cr;
+			}
+			if (temp == "_x_")
+			{
+				b[i][0] += cr;
+				b[i][2] += cr;
+			}
+			if (temp == "__x")
+			{
+				b[i][0] += cr;
+				b[i][1] += cr;
+			}
+
+			if (temp == "o__")	//Один нолик
+			{
+				b[i][1] += zr;
+				b[i][2] += zr;
+			}
+			if (temp == "_o_")
+			{
+				b[i][0] += zr;
+				b[i][2] += zr;
+			}
+			if (temp == "__o")
+			{
+				b[i][0] += zr;
+				b[i][1] += zr;
+			}
+
+			if (temp == "ox_" || temp == "xo_")	//Нолик и крестик
+			{
+				b[i][2] += vd;
+			}
+			if (temp == "o_x" || temp == "x_o")
+			{
+				b[i][1] += vd;
+			}
+			if (temp == "_ox" || temp == "_xo")
+			{
+				b[i][0] += vd;
+			}
+
+			if (temp == "xx_")	//Два крестика
+			{
+				b[i][2] += cr2;
+			}
+			if (temp == "x_x")
+			{
+				b[i][1] += cr2;
+			}
+			if (temp == "_xx")
+			{
+				b[i][0] += cr2;
+			}
+			
+			temp = a[0][i] + a[1][i] + a[2][i];		//Сканирование столбцов
+
+			if (temp == "___")	//Пусто
+			{
+				b[0][i] += vd;
+				b[1][i] += vd;
+				b[2][i] += vd;
+			}
+
+			if (temp == "x__")	//Один крестик
+			{
+				b[1][i] += cr;
+				b[2][i] += cr;
+			}
+			if (temp == "_x_")
+			{
+				b[0][i] += cr;
+				b[2][i] += cr;
+			}
+			if (temp == "__x")
+			{
+				b[0][i] += cr;
+				b[1][i] += cr;
+			}
+
+			if (temp == "o__")	//Один нолик
+			{
+				b[1][i] += zr;
+				b[2][i] += zr;
+			}
+			if (temp == "_o_")
+			{
+				b[0][i] += zr;
+				b[2][i] += zr;
+			}
+			if (temp == "__o")
+			{
+				b[0][i] += zr;
+				b[1][i] += zr;
+			}
+
+			if (temp == "ox_" || temp == "xo_")	//Нолик и крестик
+			{
+				b[2][i] += vd;
+			}
+			if (temp == "o_x" || temp == "x_o")
+			{
+				b[1][i] += vd;
+			}
+			if (temp == "_ox" || temp == "_xo")
+			{
+				b[0][i] += vd;
+			}
+
+			if (temp == "xx_")	//Два крестика
+			{
+				b[2][i] += cr2;
+			}
+			if (temp == "x_x")
+			{
+				b[1][i] += cr2;
+			}
+			if (temp == "_xx")
+			{
+				b[0][i] += cr2;
+
+			}
+		}
+
+		for (int i = 0; i < 1; i++)		//Сканирование диагоналей
+		{
+			string temp = a[0][0] + a[1][1] + a[2][2];		//Главная диагональ
+
+			if (temp == "___")	//Пусто
+			{
+				b[0][0] += vd;
+				b[1][1] += vd;
+				b[2][2] += vd;
+			}
+
+			if (temp == "x__")	//Один крестик
+			{
+				b[1][1] += cr;
+				b[2][2] += cr;
+			}
+			if (temp == "_x_")
+			{
+				b[0][0] += cr;
+				b[2][2] += cr;
+			}
+			if (temp == "__x")
+			{
+				b[0][0] += cr;
+				b[1][1] += cr;
+			}
+
+			if (temp == "o__")	//Один нолик
+			{
+				b[1][1] += zr;
+				b[2][2] += zr;
+			}
+			if (temp == "_o_")
+			{
+				b[0][0] += zr;
+				b[2][2] += zr;
+			}
+			if (temp == "__o")
+			{
+				b[0][0] += zr;
+				b[1][1] += zr;
+			}
+
+			if (temp == "ox_" || temp == "xo_")	//Нолик и крестик
+			{
+				b[2][2] += vd;
+			}
+			if (temp == "o_x" || temp == "x_o")
+			{
+				b[1][1] += vd;
+			}
+			if (temp == "_ox" || temp == "_xo")
+			{
+				b[0][0] += vd;
+			}
+
+			if (temp == "xx_")	//Два крестика
+			{
+				b[2][2] += cr2;
+			}
+			if (temp == "x_x")
+			{
+				b[1][1] += cr2;
+			}
+			if (temp == "_xx")
+			{
+				b[0][0] += cr2;
+			}
+
+			temp = a[2][0] + a[1][1] + a[0][2];		//Побочная диагональ
+
+			if (temp == "___")	//Пусто
+			{
+				b[2][0] += vd;
+				b[1][1] += vd;
+				b[0][2] += vd;
+			}
+
+			if (temp == "x__")	//Один крестик
+			{
+				b[1][1] += cr;
+				b[0][2] += cr;
+			}
+			if (temp == "_x_")
+			{
+				b[2][0] += cr;
+				b[0][2] += cr;
+			}
+			if (temp == "__x")
+			{
+				b[2][0] += cr;
+				b[1][1] += cr;
+			}
+
+			if (temp == "o__")	//Один нолик
+			{
+				b[1][1] += zr;
+				b[0][2] += zr;
+			}
+			if (temp == "_o_")
+			{
+				b[2][0] += zr;
+				b[0][2] += zr;
+			}
+			if (temp == "__o")
+			{
+				b[2][0] += zr;
+				b[1][1] += zr;
+			}
+
+			if (temp == "ox_" || temp == "xo_")	//Нолик и крестик
+			{
+				b[0][2] += vd;
+			}
+			if (temp == "o_x" || temp == "x_o")
+			{
+				b[1][1] += vd;
+			}
+			if (temp == "_ox" || temp == "_xo")
+			{
+				b[2][0] += vd;
+			}
+
+			if (temp == "xx_")	//Два крестика
+			{
+				b[0][2] += cr2;
+			}
+			if (temp == "x_x")
+			{
+				b[1][1] += cr2;
+			}
+			if (temp == "_xx")
+			{
+				b[2][0] += cr2;
+			}
+		}
+	}
+
+	if (app == 0)	//Осуществление хода
+	{
+		int maxi = 0, maxj = 0;
+
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				if (b[i][j] >= b[maxi][maxj])
+				{
+					maxi = i;
+					maxj = j;
+				}
+			}
+		}
+		a[maxi][maxj] = "o";
+	}
+	for (int i = 0; i < 3; i++) delete[] b[i];
+	delete[] b;
+}
