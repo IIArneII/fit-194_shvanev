@@ -1,0 +1,307 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <string.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fstream> 
+#include "string.h"
+#include "time.h"
+
+using namespace std;
+
+int lenstr(char* str);
+int palindrom(char* a);
+
+int main()
+{
+    setlocale(LC_ALL, "Russian");
+    srand(time(NULL));
+
+    int choose = -1;
+
+    while (choose != 0)
+    {
+        cout << "\n\nВведите номер задания:\n";
+        cout << "\tЗадание 1, вариант 1 - палидром\n\tЗадание 1, вариант 2 - палидром\n\tЗадание 1, вариант 3 - палидром\n\tЗадание 2 - поиск подстроки\n\tЗадание 3, вариант 2 - количество вхождений в текст\n\tЗадание 3, вариант 2 - количество вхождений в текст\n";
+        cin >> choose;
+        system("cls");
+        if (choose == 1)
+        {
+            char* str = new char[80];
+            cout << "Введите строку:\n";
+            cin.getline(str, 80);
+            cin.getline(str, 80);
+            int n = lenstr(str);
+            cout << "Длина строки: " << n;
+
+            /*
+            Ввод: 12345
+            Вывод: длина: 5
+            Мой ответ: 5
+
+            Ввод: 12  567     (два пробела между 2 и 5)
+            Вывод: длина: 7
+            Мой ответ: 7
+
+            Ввод: 12 4  7        (один пробел между 2 и 4, два пробела между 4 и 7, после 7 еще три пробела)
+            Вывод: длина: 10
+            Мой ответ: 10
+            */
+        }
+
+        if (choose == 2)
+        {
+            char** article = new char*[2];
+            for (int i = 0; i < 2; i++)
+            {
+                article[i] = new char[4];
+            }
+            char** noun = new char*[10];
+            for (int i = 0; i < 10; i++)
+            {
+                noun[i] = new char[10];
+            }
+            char** verb = new char* [10];
+            for (int i = 0; i < 10; i++)
+            {
+                verb[i] = new char[10];
+            }
+            char** prep = new char* [10];
+            for (int i = 0; i < 10; i++)
+            {
+                prep[i] = new char[10];
+            }
+            int* mask = new int[6];
+            char* sentence = new char[256];
+            
+            ifstream f("D:\\function\\task2.txt");
+            for (int i = 0; i < 2; i++)
+            {
+                f.getline(article[i], 4);
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                f.getline(noun[i], 10);
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                f.getline(verb[i], 10);
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                f.getline(prep[i], 10);
+            }
+            f.close();
+
+            int n;
+            cout << "Введите количество предложений, которые вы хотите получить: ";
+            cin >> n;
+            for (int i = 0; i < n; i++)
+            {
+                mask[0] = rand() % 2;
+                mask[1] = rand() % 10;
+                mask[2] = rand() % 10;
+                mask[3] = rand() % 10;
+                mask[4] = rand() % 2;
+                mask[5] = rand() % 10;
+
+                for (int i = 0; i < 255; i++)
+                {
+                    sentence[i] = NULL;
+                }
+                sentence[255] = '\0';
+
+                strcat(sentence, article[mask[0]]);
+                strcat(sentence, " ");
+                strcat(sentence, noun[mask[1]]);
+                strcat(sentence, " ");
+                strcat(sentence, verb[mask[2]]);
+                strcat(sentence, " ");
+                strcat(sentence, prep[mask[3]]);
+                strcat(sentence, " ");
+                strcat(sentence, article[mask[4]]);
+                strcat(sentence, " ");
+                strcat(sentence, noun[mask[5]]);
+                strcat(sentence, ".");
+                sentence[0] = toupper(sentence[0]);
+                cout << "Предложение " << i + 1 << ": " << sentence << endl;
+
+                /*
+                О файле, с которого считываются слова: в нем с каждой новой строки идут 32 слова: 2 артикля, 10 существительный, 10 глаголов, 10 предлогов
+                Мой файл:
+
+                    the
+                    a
+                    cat
+                    pen
+                    phone
+                    laptop
+                    box
+                    man
+                    sofa
+                    grass
+                    notebook
+                    bike
+                    dance
+                    swim
+                    blush
+                    support
+                    think
+                    is
+                    see
+                    open
+                    touch
+                    read
+                    in
+                    on
+                    at
+                    by
+                    with
+                    from
+                    of
+                    for
+                    about
+                    inside
+
+                Тестирование:
+                Ввод: 5 предложений
+                Вывод:
+                        Предложение 1: A bike support at the laptop.
+                        Предложение 2: A pen dance from a box.
+                        Предложение 3: The box is of a phone.
+                        Предложение 4: A box touch about the notebook.
+                        Предложение 5: A laptop see from a sofa.
+                */
+            }
+        }
+
+        if (choose == 3)
+        {
+            cin.clear();
+            cin.ignore();
+            char* s = new char[80];
+            cout << "Введите строку:\n";
+            cin.getline(s, 255);
+            cout << "Ответ: ";
+            if (palindrom(s) == 1) cout << "Палиндром";
+            else cout << "Не палиндром";
+
+            /*
+            Ввод: aAa54 g1gAA      a
+            Вывод: Палиндром
+            Мой ответ: Палиндром
+
+            Ввод: aAa54 g1gAA      d
+            Вывод: Не палиндром
+            Мой ответ: Не палиндром
+            */
+        }
+
+        if (choose == 4)
+        {
+            int countword = 0, countsent = 0;
+
+            const int len = 512;
+            char s[len];
+            ifstream  f("D:\\function\\task4.txt");
+
+            while (f.getline(s, len))
+            {
+                for (int i = 0; s[i] != '\0'; i++)
+                {
+                    if (s[i] == ' ' || s[i] == '!' || s[i] == '?' || s[i] == '.' || s[i] == ',' || s[i] == '\0')
+                    {
+                        int j = i;
+                        int point = 0;
+                        for (; isalpha(s[j]) == 0; j++)
+                        {
+                            if (s[j] == '.' || s[j] == '!' || s[j] == '?') point = 1;
+                            if (s[j] == '\0')
+                            {
+                                point = 1;
+                                break;
+                            }
+                        }
+                        i = j;
+                        countsent += point;
+                    }
+                    if (s[i] != '\0')
+                    {
+                        if (isalpha(s[i]) != 0)
+                        {
+                            if (s[i + 1] == ' ' || s[i + 1] == '!' || s[i + 1] == '?' || s[i + 1] == '.' || s[i + 1] == ',' || s[i + 1] == '\0') countword++;
+                            if (s[i + 1] == '\0') countsent++;
+                        }
+                    }
+                }
+            }
+            cout << "\nКоличество слов в тексте: " << countword << "\nКоличество предложений в тексте: " << countsent;
+
+            /*
+            Ввод: g. Gg ss   .. .   nid? Hin! id, ii
+            Вывод: Слов: 7  Предложений: 5
+            Мой ответ: Слов: 7  Предложений: 5
+            
+            Ввод: g. Gg ss   .! .   nid? Hin! id, ii jbdwiub       ubwub ouw ubwu b. i!      iwi
+            Вывод: Слов: 14  Предложений: 7
+            Мой ответ: Слов: 14  Предложений: 7
+
+            Ввод: g,,g. D! dd.d.
+            Вывод: Слов: 5  Предложений: 4
+            Мой ответ: Слов: 5  Предложений: 4
+
+            В данной задаче у меня появилась проблема. Иногда программа для одних и тех же предложений выдает совсем не те результаты.
+            Например, ввод "g" содержит 1 слово и 1 предложение. Программа выдает правильный ответ. Но стоит только дописать точку в конце, то есть "g.", то
+            программа может выдать странный ответ (например, 5 слов, 4 предложения), но может выдать и правильный. Однако, стоит перезапустить консоль и файл,
+            и для для этого же ввода с точкой в конце, то есть "g.", программа выдает правильный ответ, то есть 1 слово и 1 предложение.
+            Или, еще пример, в вводе "g", для которого ответ выводился правильно, я добавлял пробел ("g "), и тогда ответ так же мог смениться, например, на 5 слов и 4 предложения. Но когда я возращал
+            в первоначальный вариант, то есть "g", ответ мог выводиться старый, то есть 5 слов и 4 предложения.
+            При модификации файла, я всегда сохранял его, но консоль перезапускал для проверки результата не всегда.
+            Я не знаю, из за чего могут быть такие проблемы, возможно из за буфера в f.getline(s, len), о котором Вы говорили на лекции, а может быть из за
+            какого нибудь бага в файле.
+            */
+        }
+    }
+    return 0;
+}
+
+int lenstr(char* str)   //Считает количество символов строки. Не считает нуль символ.
+{
+    int count = 0;
+    for (int i = 0; true; i++)
+    {
+        if (str[i] != '\0')
+        {
+            count++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    return count;
+}
+
+int palindrom(char* a)  //Проверяет то, является ли строка палиндромом. возращает 0, если не палинром; 1, если не палиндром 
+{
+    bool t = 1;
+    for (int i = 0, j = strlen(a) - 1; i < j;)
+    {
+        if (isalpha(a[i]))
+        {
+            if (isalpha(a[j]))
+            {
+                if (tolower(a[i]) != tolower(a[j]))
+                {
+                    t = 0;
+                    break;
+                }
+                i++; j--;
+            }
+            else while (isalpha(a[j]) == 0) j--;
+        }
+        else while (isalpha(a[i]) == 0) i++;
+    }
+    return t;
+}
