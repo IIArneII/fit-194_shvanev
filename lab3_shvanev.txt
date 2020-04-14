@@ -1,0 +1,340 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <string.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fstream> 
+#include "string.h"
+#include "time.h"
+
+using namespace std;
+
+int palindrom(char* a);
+void numstr(char* str, const char* sym, int num);
+void sortmatrix(int** mask, int n, int m);
+
+int main()
+{
+    setlocale(LC_ALL, "RUS");
+    srand(time(NULL));
+
+    int choose = -1;
+
+    while (choose != 0)
+    {
+        cout << "\n\nВведите номер задания:\n";
+        cout << "\t1 - Вариант 9. Задание 1. Функция, конвектирующая целое число в строку\n\t2 - Вариант 9. Задание 2. Посчитать количество слов из четырех букв\n\t3 - Вариант 9. Задание 3. Упорядочить второе педложение из задачи 2 в алфавитном порядке\n\t0 - Выход\n";
+        cin >> choose;
+        system("cls");
+
+        if (choose == 1)
+        {
+            char* str = new char[5];
+            char* sym = new char[80];
+            int num;
+
+            cout << "Введите строку. Её можно оставить пустой\n";
+            cin.getline(str, 255);
+            cin.getline(str, 255);
+            cout << "Введите то, что должно стоять после основной строки и перед цифрой. Можно оставить пустой\n";
+            cin.getline(sym, 255);
+            cout << "Введите цифру, которую хотите преобразовать в строку: ";
+            cin >> num;
+            numstr(str, sym, num);
+            cout << "Строка: " << str;
+
+            delete[] str;
+            delete[] sym;
+
+            /*
+            Вторая строка создана для того, чтобы пользователь мог установать, что он хочет видеть перед числом (Например, пробел). Это создано для того, чтобы первая строка и число не склеивались
+            Если в первой строке перед нуль символом будут пробелы, то они все уберутся.
+
+            Ввод:   Основная строка: "GgG"
+                    Вторая строка: "h h"
+                    Число: "183"
+            Вывод: GgGh h183
+            Мой ответ: GgGh h183
+
+            Ввод:   Основная строка: ""
+                    Вторая строка: "h   "
+                    Число: "-172"
+            Вывод: h   -172
+            Мой ответ: h   -172
+
+            Ввод:   Основная строка: "ggg  g       "
+                    Вторая строка: "  "
+                    Число: "0"
+            Вывод: ggg  g  0
+            Мой ответ: ggg  g  0
+
+            Ввод:   Основная строка: ""
+                    Вторая строка: ""
+                    Число: "1234"
+            Вывод: 1234
+            Мой ответ: 1234
+
+            Ввод:   Основная строка: "sum"
+                    Вторая строка: " "
+                    Число: "-247"
+            Вывод: sum -247
+            Мой ответ: sum -247
+
+            Ввод:   Основная строка: "sum"
+                    Вторая строка: ""
+                    Число: "-247"
+            Вывод: sum-247
+            Мой ответ: sum-247
+            */
+        }
+
+        if (choose == 2)
+        {
+            char* str = new char[256];
+            char* tok = new char[80];
+            int count = 0;
+            ifstream f("D:\\function\\task2.txt");
+            f.getline(str, 255);
+            while (f.getline(str, 255))
+            {
+                tok = strtok(str, " !?.,");
+                while (tok != 0)
+                {
+                    if (strlen(tok) == 4) count++;
+                    tok = strtok(NULL, " !?.,");
+                }
+            }
+            cout << "Количесвто слов из четырех символов: " << count;
+
+            delete[] str;
+            delete[] tok;
+
+            /*
+            Вывод: 5
+            Мой ответ: 5
+            */
+        }
+
+        if (choose == 3)
+        {
+            char* str = new char[256];
+            char* tempstr = new char[256];
+            char* strinalfa = new char[256];
+            char* tok = new char[80];
+            int** mask;
+            int n = 0, m = 0;
+
+            cout << "Так как во второй строке слова уже стоят в алфовитном порядке, я взял третью строку\n";
+
+            ifstream f("D:\\function\\task2.txt");
+            f.getline(str, 255);
+            f.getline(str, 255);
+            f.getline(str, 255);
+
+            strcpy(tempstr, str);
+            tok = strtok(tempstr, " ,.?!");
+            while (tok != 0)
+            {
+                n++;
+                if (strlen(tok) >= m) m = strlen(tok);
+                tok = strtok(NULL, " ,.?!");
+            }
+            mask = new int* [n];
+            for (int i = 0; i < n; i++)
+            {
+                mask[i] = new int[m];
+            }
+
+            strcpy(tempstr, str);
+            tok = strtok(str, " ,.?!");
+            int i = 0;
+            while (tok != 0)
+            {
+                int j = 0;
+                for (; tok[j] != '\0'; j++)
+                {
+                    mask[i][j] = tolower(tok[j]);
+                }
+                for (; j < m; j++)
+                {
+                    mask[i][j] = 0;
+                }
+                i++;
+                tok = strtok(NULL, " ,.?!");
+            }
+
+            sortmatrix(mask, n, m);
+            
+            int k = 0;
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; mask[i][j] != 0 && j < m; j++)
+                {
+                    strinalfa[k] = mask[i][j];
+                    k++;
+                }
+                strinalfa[k] = ' ';
+                k++;
+            }
+            k--;
+            strinalfa[k] = '\0';
+            cout << "Строка в алфавитном порядке: " << strinalfa;
+
+            delete[] str;
+            delete[] tempstr;
+            delete[] strinalfa;
+            delete[] tok;
+            for (int i = 0; i < n; i++) delete[] mask[i];
+            delete[]mask;
+
+            /*
+            Так как во второй строке слова уже стоят в алфовитном порядке, я взял третью строку
+            
+            Изначальная строка:             Dut sometimes I lose my head from love.
+            
+            Вывод:
+            Строка в алфавитном порядке:    dut from head i lose love my sometimes
+
+            Мой ответ: dut from head i lose love my sometimes
+            */
+        }
+    }
+    return 0;
+}
+
+int palindrom(char* a)  //Проверяет то, является ли строка палиндромом. возращает 0, если не палинром; 1, если не палиндром 
+{
+    bool t = 1;
+    for (int i = 0, j = strlen(a) - 1; i < j;)
+    {
+        if (isalpha(a[i]))
+        {
+            if (isalpha(a[j]))
+            {
+                if (tolower(a[i]) != tolower(a[j]))
+                {
+                    t = 0;
+                    break;
+                }
+                i++; j--;
+            }
+            else while (isalpha(a[j]) == 0) j--;
+        }
+        else while (isalpha(a[i]) == 0) i++;
+    }
+    return t;
+}
+
+void numstr(char* str, const char* sym, int num)  //Добавляет в конец строки str (если до нуль символа есть пробелы, то после последнего не пробела) строку sym, а после нее целое число num.
+{
+    int clonnum = 0, k, neg = 0;
+    if (num < 0)
+    {
+        neg = 1;
+        num = fabs(num);
+    }
+    while (num != 0)
+    {
+        clonnum += num % 10;
+        clonnum *= 10;
+        num /= 10;
+    }
+    clonnum /= 10;
+
+    if (str[0] == '\0')
+    {
+        k = 0;
+    }
+    else
+    {
+        for (int i = 0; true; i++)
+        {
+            if (str[i] == '\0')
+            {
+                if (str[i - 1] != ' ')
+                {
+                    k = i;
+                }
+                else
+                {
+                    for (int j = i - 1; true; j--)
+                    {
+                        if (str[j] != ' ')
+                        {
+                            k = j + 1;
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    for (int p = 0; sym[p] != '\0'; p++)
+    {
+        str[k] = sym[p];
+        k++;
+    }
+    if (neg == 1)
+    {
+        str[k] = '-';
+        k++;
+    }
+    if (clonnum == 0)
+    {
+        str[k] = '0';
+        k++;
+    }
+    while (clonnum != 0)
+    {
+        str[k] = clonnum % 10 + 48;
+        k++;
+        clonnum /= 10;
+    }
+    str[k] = '\0';
+}
+
+void sortmatrix(int** mask, int n, int m) //Сортирует строки целочисленной матрицы mask размерностью n на m в порядке возрастания элементов первого столбца. Если найдет равные элементы, то будет смотреть строки, пока не найдет неравные
+{
+    for (int i = 0; i < n; i++)
+    {
+        int mini = i;
+        for (int j = i + 1; j < n; j++)
+        {
+            if (mask[j][0] < mask[mini][0]) mini = j;
+            if (mask[j][0] == mask[mini][0])
+            {
+                for (int k = 0; k < m; k++)
+                {
+                    if (mask[j][k] < mask[mini][k])
+                    {
+                        mini = j;
+                        break;
+                    }
+                }
+            }
+        }
+
+        int* min = new int[m];
+        for (int j = 0; j < m; j++)
+        {
+            min[j] = mask[mini][j];
+        }
+
+        for (int j = mini; j > i; j--)
+        {
+            for (int k = 0; k < m; k++)
+            {
+                mask[j][k] = mask[j - 1][k];
+            }
+        }
+        for (int j = 0; j < m; j++)
+        {
+            mask[i][j] = min[j];
+        }
+
+        delete[]min;
+    }
+}
