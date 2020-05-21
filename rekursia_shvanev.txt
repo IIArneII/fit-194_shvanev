@@ -1,0 +1,127 @@
+#include <iostream>
+#include "stdlib.h"
+#include "stdio.h"
+#include "math.h"
+#include "locale"
+#include "fstream"
+#include "time.h"
+#include "windows.h"
+using namespace std;
+
+int num_to_arr(int n, int num);
+int nulunits(int a, int b, int n = 1);
+
+static int* cache;
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+	srand(time(NULL));
+
+	int choosee = -1;
+
+	while (choosee != 0)
+	{
+		cout << "\nВведите номер задания:\n\t1. Вывести цифры числа N по одной\n\t2. \n\t3. Вывод N чисел последовательности\n\t4. Определить, сколько есть последовательностей из a нулей и b единиц, где два нуля не стоят рядом\n\t0. Выход\n";
+		cin >> choosee;
+		system("cls");
+
+		if (choosee == 1)
+		{
+			int n, count = 0, temp_n;
+
+			cout << "Задание 1\nДано натуральное число N. Вывести все его цифры по одной, в обычном порядке, разделяя их пробелами\nВведите N: ";
+			cin >> n;
+			temp_n = n;
+			while (temp_n != 0)
+			{
+				temp_n /= 10;
+				count++;
+			}
+			cache = new int[count];
+			num_to_arr(n, count);
+			cout << "Цифры числа: ";
+			for (int i = 0; i < count; i++)
+			{
+				cout << cache[i] << "  ";
+			}
+			cout << endl;
+			delete[] cache;
+
+			/*
+			Ввод: 15
+			Вывод: 1  5
+			Мой ответ: 1  5
+
+			Ввод: 1678
+			Вывод: 1  6  7 8
+			Мой ответ: 1  6  7  8
+
+			Ввод: -1678
+			Вывод: 1  6  7 8
+			Мой ответ: 1  6  7  8
+			*/
+		}
+
+		if(choosee == 4)
+		{
+			int a, b;
+
+			cout << "Задание 4\nОпределить, сколько есть последовательностей из a нулей и b единиц, где два нуля не стоят рядом\nВведите a: ";
+			cin >> a;
+			cout << "Введите b: ";
+			cin >> b;
+			cout << "Количество последовательностей: " << nulunits(a, b);
+
+			/*
+			Ввод: a = 2; b = 2
+			Вывод: 3
+			Мой ответ: 3
+
+			Ввод: a = 3; b = 1
+			Вывод: 0
+			Мой ответ: 0
+
+			Ввод: a = 1; b = 3
+			Вывод: 4
+			Мой ответ: 4
+
+			Ввод: a = 3; b = 2
+			Вывод: 1
+			Мой ответ: 1
+			*/
+		}
+	}
+
+	return 0;
+}
+
+int num_to_arr(int n, int num)	//Рекурсивная функция, заполняющая статический массив cache цифрами числа n. N - само число, num - количество цифр в нем
+{
+	if (n == 0) return 0;
+	else
+	{
+		cache[num - 1] = fabs(n % 10);
+		return num_to_arr(n / 10, num - 1);
+	}
+}
+
+int nulunits(int a, int b, int n)	//Рекурсивная функция, вычисляющая количество последовательностей из a нулей и b единиц, где два нуля не могут стоять вместе. N по умолчанию равен 1 - определяет, что первым значением может быть как ноль, так и единица
+{
+	if (b == 0 && a >= 2) return 0;
+	if ((b == 0 && a == 1) || a == 0) return 1;
+	else
+	{
+		if (n == 0) 
+		{
+			return nulunits(a, b - 1, 1);
+		}
+		if (n == 1)
+		{
+			int n1 = nulunits(a - 1, b, 0);
+			int n2 = nulunits(a, b - 1, 1);
+			return n1 + n2;
+		}
+		
+	}
+}
